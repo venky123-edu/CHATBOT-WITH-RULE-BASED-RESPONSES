@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rule-Based Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .chat-message {
+            max-width: 80%;
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            line-height: 1.4;
+        }
+        .user-message {
+            background-color: #3b82f6;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 0.25rem;
+        }
+        .bot-message {
+            background-color: #f3f4f6;
+            margin-right: auto;
+            border-bottom-left-radius: 0.25rem;
+        }
+        .chat-container {
+            height: 400px;
+            overflow-y: auto;
+            scroll-behavior: smooth;
+        }
+        .typing-indicator {
+            display: flex;
+            padding: 0.5rem;
+        }
+        .typing-indicator span {
+            height: 10px;
+            width: 10px;
+            background-color: #9ca3af;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 2px;
+            animation: typing 1s infinite ease-in-out;
+        }
+        .typing-indicator span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        .typing-indicator span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        @keyframes typing {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-md mx-auto my-8 bg-white rounded-lg shadow-lg overflow-hidden">
+        <div class="p-4 bg-blue-600 text-white">
+            <h1 class="text-xl font-bold">Rule-Based Chatbot</h1>
+            <p class="text-sm opacity-75">I can answer questions about greetings, time, date, weather, and more!</p>
+        </div>
+        
+        <div id="chat-container" class="chat-container p-4">
+            <div class="bot-message chat-message">
+                Hello! I'm a simple rule-based chatbot. Ask me about:
+                <ul class="list-disc pl-5 mt-1">
+                    <li>Greetings (hello, hi, etc.)</li>
+                    <li>Time and date</li>
+                    <li>Weather</li>
+                    <li>My capabilities</li>
+                    <li>Basic questions</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="p-4 border-t border-gray-200">
+            <div class="flex">
+                <input 
+                    id="user-input" 
+                    type="text" 
+                    placeholder="Type your message here..." 
+                    class="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                <button 
+                    id="send-btn" 
+                    class="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                    Send
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatContainer = document.getElementById('chat-container');
+            const userInput = document.getElementById('user-input');
+            const sendBtn = document.getElementById('send-btn');
+            
+            // Function to add a message to the chat
+            function addMessage(sender, message) {
+                const messageDiv = document.createElement('div');
+                messageDiv.classList.add('chat-message', sender === 'user' ? 'user-message' : 'bot-message');
+                messageDiv.textContent = message;
+                chatContainer.appendChild(messageDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+            
+            // Function to show typing indicator
+            function showTypingIndicator() {
+                const typingDiv = document.createElement('div');
+                typingDiv.classList.add('typing-indicator', 'bot-message', 'chat-message');
+                typingDiv.innerHTML = '<span></span><span></span><span></span>';
+                chatContainer.appendChild(typingDiv);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+                return typingDiv;
+            }
+            
+            // Function to process user input and generate bot response
+            function processInput(input) {
+                const lowerInput = input.toLowerCase().trim();
+                
+                // Show typing indicator
+                const typingIndicator = showTypingIndicator();
+                
+                // Simulate bot thinking time
+                setTimeout(() => {
+                    // Remove typing indicator
+                    chatContainer.removeChild(typingIndicator);
+                    
+                    let response;
+                    
+                    // Rule-based responses
+                    if (lowerInput.includes('hello') || lowerInput.includes('hi') || lowerInput.includes('hey')) {
+                        response = "Hello there! How can I help you today?";
+                    } else if (lowerInput.includes('how are you') || lowerInput.includes("how're you")) {
+                        response = "I'm just a bot, but I'm functioning perfectly! Thanks for asking.";
+                    } else if (lowerInput.includes('time')) {
+                        const now = new Date();
+                        response = `The current time is ${now.toLocaleTimeString()}.`;
+                    } else if (lowerInput.includes('date') || lowerInput.includes('today')) {
+                        const now = new Date();
+                        response = `Today is ${now.toLocaleDateString()}.`;
+                    } else if (lowerInput.includes('weather')) {
+                        response = "I'm sorry, I don't have real-time weather data. This is just a simple rule-based demo.";
+                    } else if (lowerInput.includes('thank') || lowerInput.includes('thanks')) {
+                        response = "You're welcome! Is there anything else I can help with?";
+                    } else if (lowerInput.includes('help') || lowerInput.includes('what can you do')) {
+                        response = "I can respond to basic greetings, tell you the current time or date, and have simple conversations. Try asking me about these topics!";
+                    } else if (lowerInput.includes('name') || lowerInput.includes("what's your name")) {
+                        response = "I'm a simple rule-based chatbot. You can call me Chatty!";
+                    } else if (lowerInput.includes('bye') || lowerInput.includes('goodbye')) {
+                        response = "Goodbye! Feel free to come back if you have more questions.";
+                    } else if (lowerInput.includes('joke') || lowerInput.includes('funny')) {
+                        response = "Why don't scientists trust atoms? Because they make up everything!";
+                    } else {
+                        response = "I'm sorry, I didn't understand that. I'm a simple bot with limited responses. Try asking about time, date, or greetings!";
+                    }
+                    
+                    addMessage('bot', response);
+                }, 1000);
+            }
+            
+            // Event listener for send button
+            sendBtn.addEventListener('click', () => {
+                const message = userInput.value.trim();
+                if (message) {
+                    addMessage('user', message);
+                    userInput.value = '';
+                    processInput(message);
+                }
+            });
+            
+            // Event listener for Enter key
+            userInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    sendBtn.click();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
